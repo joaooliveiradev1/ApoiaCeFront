@@ -6,7 +6,7 @@ export function Header() {
       <img 
         src={Logo} 
         alt="ApoiaCe Logo"
-        className="h-6"
+        className="h-4 w-auto"
       />
     </header>
   )
