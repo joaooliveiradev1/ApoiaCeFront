@@ -1,11 +1,11 @@
-import { SignUp } from "./pages/sign_up";
-import { SignIn } from "./pages/sign_in";
+import { SignupCard } from "./Components/SignupCard";
 import { PreMenu } from "./pages/pre_menu";
+import { SignIn } from "./pages/sign_in";
 
 function App() {
   return (
     <>
-      <SignUp></SignUp>
+      <PreMenu></PreMenu>
     </>
   );
 }

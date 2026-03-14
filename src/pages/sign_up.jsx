@@ -1,15 +1,12 @@
-import { Header } from '../Components/header_register'
-import { SignupCard } from '../Components/SignupCard'
-import { Footer } from '../Components/footer'
+import { Header } from "../Components/header";
+import { SignupCard } from "../Components/SignupCard";
+import { Footer } from "../Components/footer";
+import { div } from "framer-motion/client";
 
 export function SignUp() {
   return (
-    <div className="min-h-screen bg-[#1F1D2B] flex flex-col">
-      <Header />
-      <div className="flex flex-1 items-center justify-center px-4">
-        <SignupCard />
-      </div>
-      <Footer/>
+    <div>
+      <SignupCard />
     </div>
-  )
+  );
 }
