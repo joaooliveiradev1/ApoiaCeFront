@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/Components/ui/button";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Rocket, Users2 } from "lucide-react";
 import { ProjectCard } from "@/Components/projectCard";
 
@@ -58,7 +58,7 @@ const featuredProjects = [
   },
 ];
 
-export default function Home() {
+export function PreHome() {
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/30">
       <main className="flex-grow pt-20">
@@ -118,7 +118,7 @@ export default function Home() {
                   Explorar Projetos
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Link href="/register">
+                <Link to="/register">
                   <Button
                     size="lg"
                     variant="outline"
@@ -217,7 +217,7 @@ export default function Home() {
                 Junte-se a milhares de criadores que já transformaram seus
                 sonhos em realidade com o apoio da comunidade ApoiaCe.
               </p>
-              <Link href="/register">
+              <Link to="/register">
                 <Button
                   size="lg"
                   className="h-14 px-10 bg-white text-black hover:bg-white/90 font-bold rounded-full text-lg shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)]"

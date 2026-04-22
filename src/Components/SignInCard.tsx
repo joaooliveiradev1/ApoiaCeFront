@@ -3,23 +3,45 @@ import { motion } from "framer-motion";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
-import { Link } from "wouter";
-import { Gamepad2, Mail, Lock, ArrowLeft } from "lucide-react";
+import { Gamepad2, Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 export function SignInCard() {
-  const [form, setForm] = useState({
-    email: "",
-    senha: "",
-  });
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({ email: "", senha: "" });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
+      setError(null);
     };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // lógica de login aqui
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await login({ email: form.email, senha: form.senha });
+      navigate("/");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        setError("E-mail ou senha incorretos.");
+      } else if (status === 404) {
+        setError("Usuário não encontrado.");
+      } else {
+        setError("Erro ao conectar com o servidor. Tente novamente.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,7 +52,7 @@ export function SignInCard() {
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
 
       <Link
-        href="/"
+        to="/"
         className="absolute top-8 left-8 text-muted-foreground hover:text-white transition-colors flex items-center gap-2 font-medium z-20"
       >
         <ArrowLeft className="w-4 h-4" /> Voltar
@@ -43,13 +65,12 @@ export function SignInCard() {
         className="w-full max-w-md relative z-10"
       >
         <div className="glass-panel border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          {/* Top border glow */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
 
           {/* Header */}
           <div className="text-center mb-8">
             <Link
-              href="/"
+              to="/"
               className="inline-flex items-center gap-2 mb-6 group cursor-pointer"
             >
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/50 group-hover:glow-primary transition-all duration-300">
@@ -77,6 +98,7 @@ export function SignInCard() {
                   placeholder="seu@email.com"
                   value={form.email}
                   onChange={handleChange("email")}
+                  disabled={isLoading}
                   className="pl-10 bg-background/50 border-white/10 focus-visible:border-primary/50 focus-visible:ring-primary/20 text-white h-12 rounded-xl placeholder:text-muted-foreground"
                 />
               </div>
@@ -102,23 +124,39 @@ export function SignInCard() {
                   placeholder="••••••••"
                   value={form.senha}
                   onChange={handleChange("senha")}
+                  disabled={isLoading}
                   className="pl-10 bg-background/50 border-white/10 focus-visible:border-primary/50 focus-visible:ring-primary/20 text-white h-12 rounded-xl placeholder:text-muted-foreground"
                 />
               </div>
             </div>
 
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm text-red-400 text-center bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2"
+              >
+                {error}
+              </motion.p>
+            )}
+
             <Button
               type="submit"
+              disabled={isLoading}
               className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl mt-4 glow-primary text-lg tracking-widest"
             >
-              ENTRAR
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                "ENTRAR"
+              )}
             </Button>
           </form>
 
           <div className="mt-8 text-center text-sm text-muted-foreground">
             Ainda não tem uma conta?{" "}
             <Link
-              href="/register"
+              to="/register"
               className="text-white font-medium hover:text-primary transition-colors"
             >
               Cadastre-se

@@ -1,13 +1,5 @@
-import { SignupCard } from "./Components/SignupCard";
-import { PreMenu } from "./pages/pre_menu";
-import { SignIn } from "./pages/sign_in";
+import { AppRoutes } from "./routes/AppRoutes";
 
-function App() {
-  return (
-    <>
-      <PreMenu></PreMenu>
-    </>
-  );
+export default function App() {
+  return <AppRoutes />;
 }
-
-export default App;
