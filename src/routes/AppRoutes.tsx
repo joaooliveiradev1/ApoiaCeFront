@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { SignIn } from "../pages/sign_in";
 import { SignUp } from "../pages/sign_up";
 import { PreMenu } from "../pages/pre_menu";
+import { Thanks } from "../pages/thanks";
 import type { JSX } from "react";
 
 function PublicRoute({ children }: { children: JSX.Element }) {
