@@ -1,12 +1,12 @@
 import { Header } from "../Components/header";
 import { Footer } from "../Components/footer";
-import Home from "@/Components/preHome";
+import { PreHome } from "@/Components/preHome";
 
 export function PreMenu() {
   return (
     <div className="w-full">
       <Header />
-      <Home></Home>
+      <PreHome />
       <Footer />
     </div>
   );

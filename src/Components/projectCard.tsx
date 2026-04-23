@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/Components/ui/button";
-import { Link } from "wouter";
-
+import { Link } from "react-router-dom";
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -75,7 +74,7 @@ export function ProjectCard({
           <span className="text-xs text-muted-foreground">
             {supporters} apoiadores
           </span>
-          <Link href={`/projeto/${id}`}>
+          <Link to={`/projeto/${id}`}>
             <Button
               size="sm"
               variant="outline"

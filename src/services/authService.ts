@@ -1,0 +1,24 @@
+import api from "./api";
+import type {
+  LoginRequest,
+  RegisterRequest,
+  AuthResponse,
+} from "../types/auth";
+
+export const authService = {
+  debugger: true,
+
+  login: async (data: LoginRequest): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>("/auth/login", data);
+    return response.data;
+  },
+
+  register: async (data: RegisterRequest): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>("/auth/register", data);
+    return response.data;
+  },
+
+  logout: () => {
+    localStorage.removeItem("token");
+  },
+};
