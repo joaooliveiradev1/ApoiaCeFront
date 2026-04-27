@@ -4,6 +4,7 @@ import { SignIn } from "../pages/sign_in";
 import { SignUp } from "../pages/sign_up";
 import { PreMenu } from "../pages/pre_menu";
 import { Thanks } from "../pages/thanks";
+import { CreateProject} from "../pages/CreateProject";
 import type { JSX } from "react";
 
 function PublicRoute({ children }: { children: JSX.Element }) {
@@ -13,27 +14,6 @@ function PublicRoute({ children }: { children: JSX.Element }) {
 
 export function AppRoutes() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<PreMenu />} />
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <SignIn />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <PublicRoute>
-              <SignUp />
-            </PublicRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <CreateProject></CreateProject>
   );
 }
