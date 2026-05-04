@@ -5,12 +5,11 @@ import { Footer } from "@/components/footer";
 export function AlterData() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-
+      <Header/>
       <main className="flex-1 pt-20">
         <ProfileForm />
       </main>
-      <Footer />
+      <Footer/>
     </div>
   );
 }
