@@ -18,7 +18,7 @@ export interface AuthResponse {
 }
 
 export interface UsuarioResponse {
-  id: number;
+  id: string;
   nome: string;
   email: string;
   role: "APOIADOR" | "CRIADOR" | "ADMIN";

@@ -20,7 +20,7 @@ interface AuthContextData {
 interface JwtPayload {
   sub: string;
   role: string;
-  id: number;
+  id: string;
   nome: string;
 }
 
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem("token");
   });
-  const [isLoading] = useState(true);
+  const [isLoading] = useState(false);
 
   const [usuario, setUsuario] = useState<UsuarioResponse | null>(() => {
     const storedToken = localStorage.getItem("token");
