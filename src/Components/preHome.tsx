@@ -1,70 +1,31 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/Components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Rocket, Users2 } from "lucide-react";
 import { ProjectCard } from "@/Components/projectCard";
+import { projetoService, type Projeto } from "../services/projetoService";
 
-// Mock Data using generated images
 import heroImg from "../assets/projeto_apoia_ce.png";
-import projeto1 from "../assets/projeto1.png";
-import projeto2 from "../assets/projeto2.png";
-import projeto3 from "../assets/projeto3.png";
-import projeto4 from "../assets/projeto4.png";
 
-const featuredProjects = [
-  {
-    id: "1",
-    title: "Duelo de Dragões: RPG de Mesa",
-    author: "Estúdio Tormenta",
-    category: "RPG",
-    imageUrl: projeto1,
-    raised: 45000,
-    goal: 30000,
-    daysLeft: 12,
-    supporters: 342,
-  },
-  {
-    id: "2",
-    title: "CyberCity 2077 - Jogo Indie",
-    author: "Pixel Arts",
-    category: "Games",
-    imageUrl: projeto2,
-    raised: 12500,
-    goal: 50000,
-    daysLeft: 28,
-    supporters: 105,
-  },
-  {
-    id: "3",
-    title: "Crônicas do Cósmico Vol. 1",
-    author: "HQ Labs",
-    category: "Quadrinhos",
-    imageUrl: projeto3,
-    raised: 8900,
-    goal: 10000,
-    daysLeft: 5,
-    supporters: 210,
-  },
-  {
-    id: "4",
-    title: "Expedição Estelar Boardgame",
-    author: "Galactic Games",
-    category: "Boardgames",
-    imageUrl: projeto4,
-    raised: 85000,
-    goal: 80000,
-    daysLeft: 3,
-    supporters: 890,
-  },
-];
+function calcularDiasRestantes(dataFim: string | null): number {
+  if (!dataFim) return 0;
+  const diff = new Date(dataFim).getTime() - new Date().getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
 
 export function PreHome() {
+  const [featuredProjects, setFeaturedProjects] = useState<Projeto[]>([]);
+
+  useEffect(() => {
+    projetoService.listar(0, 4).then((data) => setFeaturedProjects(data.content));
+  }, []);
+
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/30">
       <main className="flex-grow pt-20">
         {/* Hero Section */}
         <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-          {/* Background Elements */}
           <div className="absolute inset-0 z-0">
             <img
               src={heroImg}
@@ -72,8 +33,6 @@ export function PreHome() {
               className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background" />
-
-            {/* Cyberpunk glowing orbs */}
             <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] mix-blend-screen" />
             <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px] mix-blend-screen" />
           </div>
@@ -136,16 +95,13 @@ export function PreHome() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="hidden lg:block relative"
             >
-              {/* Decorative tech UI elements could go here, for now keeping it clean as the background image is strong */}
               <div className="absolute right-0 top-1/2 -translate-y-1/2 glass-panel p-6 rounded-2xl border-white/10 shadow-2xl backdrop-blur-2xl animate-in slide-in-from-right duration-1000 delay-500">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
                     <Rocket className="w-6 h-6 text-secondary" />
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">
-                      Projetos Financiados
-                    </div>
+                    <div className="text-sm text-muted-foreground">Projetos Financiados</div>
                     <div className="text-2xl font-bold text-white">+2.4k</div>
                   </div>
                 </div>
@@ -155,9 +111,7 @@ export function PreHome() {
                     <Users2 className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground">
-                      Apoiadores Ativos
-                    </div>
+                    <div className="text-sm text-muted-foreground">Apoiadores Ativos</div>
                     <div className="text-2xl font-bold text-white">+150k</div>
                   </div>
                 </div>
@@ -187,17 +141,32 @@ export function PreHome() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProjects.map((project, idx) => (
-                <ProjectCard key={project.id} {...project} index={idx} />
-              ))}
-            </div>
+            {featuredProjects.length === 0 ? (
+              <p className="text-muted-foreground text-center py-12">
+                Nenhum projeto publicado ainda.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {featuredProjects.map((projeto, idx) => (
+                  <ProjectCard
+                    key={projeto.id}
+                    id={projeto.id}
+                    title={projeto.titulo}
+                    author={projeto.criadorNome}
+                    category={projeto.categoriaNome}
+                    imageUrl={projeto.capaUrl}
+                    raised={Number(projeto.valorCaptado)}
+                    goal={Number(projeto.metaValor)}
+                    daysLeft={calcularDiasRestantes(projeto.dataFim)}
+                    supporters={projeto.qtdApoiadores}
+                    index={idx}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="mt-10 text-center md:hidden">
-              <Button
-                variant="outline"
-                className="w-full border-white/10 text-white"
-              >
+              <Button variant="outline" className="w-full border-white/10 text-white">
                 Ver todos os projetos
               </Button>
             </div>

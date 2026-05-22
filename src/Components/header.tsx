@@ -56,7 +56,6 @@ export function Header() {
               <Search className="w-5 h-5" />
             </Button>
 
-            {/* Só mostra "Entrar" se NÃO estiver logado */}
             {!usuario && (
               <Link to="/login">
                 <Button
@@ -68,7 +67,6 @@ export function Header() {
               </Link>
             )}
 
-            {/* Se estiver logado, mostra saudação + botão logout */}
             {usuario && (
               <div className="hidden lg:flex items-center gap-3">
                 <Button
@@ -83,7 +81,7 @@ export function Header() {
               </div>
             )}
 
-            <Link to="/register">
+            <Link to="/criar-projeto">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full px-6 glow-primary">
                 Criar Projeto
               </Button>
@@ -145,7 +143,7 @@ export function Header() {
                   </Button>
                 )}
 
-                <Link to="/register">
+                <Link to="/criar-projeto">
                   <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold glow-primary">
                     Criar Projeto
                   </Button>

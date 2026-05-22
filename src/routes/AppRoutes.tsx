@@ -4,6 +4,7 @@ import { SignIn } from "../pages/sign_in";
 import { SignUp } from "../pages/sign_up";
 import { PreMenu } from "../pages/pre_menu";
 import { AlterData } from "../pages/alterData";
+import { CreateProject } from "../pages/CreateProject";
 import type { JSX } from "react";
 
 function PublicRoute({ children }: { children: JSX.Element }) {
@@ -11,7 +12,6 @@ function PublicRoute({ children }: { children: JSX.Element }) {
   return !isAuthenticated ? children : <Navigate to="/" replace />;
 }
 
-// ← novo: protege rotas autenticadas
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -43,6 +43,14 @@ export function AppRoutes() {
           element={
             <PrivateRoute>
               <AlterData />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/criar-projeto"
+          element={
+            <PrivateRoute>
+              <CreateProject />
             </PrivateRoute>
           }
         />
