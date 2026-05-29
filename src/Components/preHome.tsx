@@ -70,14 +70,16 @@ export function PreHome() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  size="lg"
-                  className="h-14 px-8 bg-primary hover:bg-primary/90 text-white font-semibold rounded-full glow-primary text-lg group"
-                >
-                  Explorar Projetos
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <Link to="/register">
+                <Link to="/login">
+                  <Button
+                    size="lg"
+                    className="h-14 px-8 bg-primary hover:bg-primary/90 text-white font-semibold rounded-full glow-primary text-lg group"
+                  >
+                    Explorar Projetos
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link to="/login">
                   <Button
                     size="lg"
                     variant="outline"
@@ -132,13 +134,15 @@ export function PreHome() {
                   Descubra as ideias mais incríveis da comunidade.
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                className="text-primary hover:text-primary/80 hover:bg-transparent hidden md:flex items-center group"
-              >
-                Ver todos{" "}
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <Link to="/login">
+                <Button
+                  variant="ghost"
+                  className="text-primary hover:text-primary/80 hover:bg-transparent hidden md:flex items-center group"
+                >
+                  Ver todos{" "}
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
 
             {featuredProjects.length === 0 ? (
@@ -166,9 +170,11 @@ export function PreHome() {
             )}
 
             <div className="mt-10 text-center md:hidden">
-              <Button variant="outline" className="w-full border-white/10 text-white">
-                Ver todos os projetos
-              </Button>
+              <Link to="/login">
+                <Button variant="outline" className="w-full border-white/10 text-white">
+                  Ver todos os projetos
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -186,7 +192,7 @@ export function PreHome() {
                 Junte-se a milhares de criadores que já transformaram seus
                 sonhos em realidade com o apoio da comunidade ApoiaCe.
               </p>
-              <Link to="/register">
+              <Link to="/login">
                 <Button
                   size="lg"
                   className="h-14 px-10 bg-white text-black hover:bg-white/90 font-bold rounded-full text-lg shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)]"

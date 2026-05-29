@@ -9,16 +9,16 @@ export function Header() {
   const { usuario, logout } = useAuth();
 
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Projetos", path: "/explore" },
-    { name: "Perfil", path: "#" },
+    { name: "Home", path: usuario ? "/explore" : "/login" },
+    { name: "Projetos", path: usuario ? "/home" : "/login" },
+    { name: "Perfil", path: usuario ? "/perfil" : "/login" },
   ];
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-panel border-b border-white/5 transition-all duration-300">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group cursor-pointer">
+        <Link to={usuario ? "/home" : "/"} className="flex items-center gap-2 group cursor-pointer">
           <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center border border-primary/50 group-hover:glow-primary transition-all duration-300">
             <Gamepad2 className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
           </div>
@@ -81,7 +81,7 @@ export function Header() {
               </div>
             )}
 
-            <Link to="/criar-projeto">
+            <Link to={usuario ? "/criar-projeto" : "/login"}>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-full px-6 glow-primary">
                 Criar Projeto
               </Button>
@@ -143,7 +143,7 @@ export function Header() {
                   </Button>
                 )}
 
-                <Link to="/criar-projeto">
+                <Link to={usuario ? "/criar-projeto" : "/login"}>
                   <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold glow-primary">
                     Criar Projeto
                   </Button>

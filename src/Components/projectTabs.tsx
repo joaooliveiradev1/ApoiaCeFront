@@ -1,23 +1,13 @@
 import { useState } from "react";
 
-const projectDescription = `A cada mês, a Revista Tormenta20 traz uma aventura inédita e completa, com fichas, mapas de batalha e tesouros. As aventuras são sequenciais e formam uma campanha épica, com grandes repercussões na história de Arton! Cada aventura é dividida em quatro partes, e cada parte dura uma sessão de jogo. Assim, cada aventura é suficiente para quatro sessões — ou um mês de jogo, se você jogar uma vez por semana.`;
-
 interface ProjectTabsProps {
   title?: string;
   description?: string;
-  sections?: { heading: string; content: string }[];
 }
 
 export function ProjectTabs({
-  title = "O que é a Revista Tormenta20?",
-  description = projectDescription,
-  sections = [
-    {
-      heading: "O que é a Revista Tormenta20?",
-      content:
-        "Criada por Thiago Rosa, Glauco Lessa, J.M. Trevisan, Karen Soarele e Guilherme Dei Svaldi, a Revista Tormenta20 é a porta de entrada ideal para iniciantes, mas também traz desafios e novidades à altura dos fãs mais veteranos! A campanha é excelente para iniciantes, trazendo dicas de alguns dos mestres mais experientes do RPG nacional. Mas, se você já é experiente, Duelo de Dragões é repleta de desafios e mistérios, além de envolver figuras lendárias de Arton!",
-    },
-  ],
+  title = "",
+  description = "",
 }: ProjectTabsProps) {
   const [activeTab, setActiveTab] = useState("sobre");
 
@@ -46,16 +36,10 @@ export function ProjectTabs({
 
         {/* Content */}
         <div className="space-y-6 text-sm text-white/70 leading-relaxed">
+          {title && (
+            <h2 className="text-lg font-black text-white mb-3">{title}</h2>
+          )}
           <p>{description}</p>
-
-          {sections.map((section, i) => (
-            <div key={i}>
-              <h2 className="text-lg font-black text-white mb-3">
-                {section.heading}
-              </h2>
-              <p>{section.content}</p>
-            </div>
-          ))}
         </div>
 
       </div>

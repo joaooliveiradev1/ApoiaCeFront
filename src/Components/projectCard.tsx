@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/Components/ui/button";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+
 interface ProjectCardProps {
   id: string;
   title: string;
@@ -26,7 +28,9 @@ export function ProjectCard({
   supporters,
   index = 0,
 }: ProjectCardProps) {
+  const { usuario } = useAuth();
   const progress = Math.min((raised / goal) * 100, 100);
+  const destination = usuario ? `/projeto/${id}` : "/login";
 
   return (
     <motion.div
@@ -74,7 +78,7 @@ export function ProjectCard({
           <span className="text-xs text-muted-foreground">
             {supporters} apoiadores
           </span>
-          <Link to={`/projeto/${id}`}>
+          <Link to={destination}>
             <Button
               size="sm"
               variant="outline"

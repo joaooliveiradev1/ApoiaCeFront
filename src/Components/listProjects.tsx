@@ -8,17 +8,27 @@ function calcularDiasRestantes(dataFim: string | null): number {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
 
-export function ListProjects() {
+interface ListProjectsProps {
+  activeCategory: string;
+  search: string;
+}
+
+export function ListProjects({ activeCategory, search }: ListProjectsProps) {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    projetoService.listar()
+    setIsLoading(true);
+    setErro(null);
+
+    const categoria = activeCategory === "Todos" ? undefined : activeCategory;
+
+    projetoService.listar(0, 12, categoria, search || undefined)
       .then((data) => setProjetos(data.content))
       .catch(() => setErro("Erro ao carregar projetos."))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [activeCategory, search]);
 
   if (isLoading) {
     return (
@@ -39,7 +49,7 @@ export function ListProjects() {
   if (projetos.length === 0) {
     return (
       <section className="min-h-screen bg-catalog-bg px-4 py-16 flex items-center justify-center">
-        <p className="text-muted-foreground">Nenhum projeto publicado ainda.</p>
+        <p className="text-muted-foreground">Nenhum projeto encontrado.</p>
       </section>
     );
   }

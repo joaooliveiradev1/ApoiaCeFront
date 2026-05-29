@@ -1,31 +1,22 @@
 import { QrCode, CreditCard, Lock, ArrowRight } from "lucide-react";
-import { FooterSimple } from "../Components/footerSimple"; // importa o footer
+import { useNavigate, useParams } from "react-router-dom";
+import { FooterSimple } from "../Components/footerSimple";
 
-type PreMenuProps = {
-  projectTitle?: string;
-  onSelectPix?: () => void;
-  onSelectCartao?: () => void;
-};
+export function ChoicePayment() {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
 
-export function ChoicePayment({
-  projectTitle = "Revista Tormenta20",
-  onSelectPix,
-  onSelectCartao,
-}: PreMenuProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
-      
-      {/* CONTEÚDO PRINCIPAL */}
       <div className="flex items-center justify-center p-4 flex-1">
         <div className="w-full max-w-2xl">
-          
+
           <header className="text-center mb-10">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
               Finalizar Apoio
             </h1>
             <p className="text-muted-foreground mt-2 text-sm">
-              Você está apoiando{" "}
-              <span className="text-primary font-medium">{projectTitle}</span>
+              Escolha como deseja concluir seu apoio
             </p>
           </header>
 
@@ -44,31 +35,25 @@ export function ChoicePayment({
             </p>
 
             <div className="grid grid-cols-2 gap-4">
-              
+
               {/* PIX */}
               <button
-                onClick={onSelectPix}
-                className="relative flex flex-col gap-3 rounded-xl border border-border 
-                bg-[#1B1C26] hover:bg-[#252736]
-                hover:border-primary/60 transition-all duration-200 
-                hover:scale-[1.02] p-5 text-left group"
+                onClick={() => navigate(`/pagamento-pix/${id}`)}
+                className="relative flex flex-col gap-3 rounded-xl border border-border bg-[#1B1C26] hover:bg-[#252736] hover:border-primary/60 transition-all duration-200 hover:scale-[1.02] p-5 text-left group"
                 style={{ boxShadow: "var(--shadow-card)" }}
               >
                 <div className="flex items-center justify-between">
                   <div className="h-10 w-10 rounded-lg bg-[#0f2f3a] border border-border flex items-center justify-center">
                     <QrCode className="h-5 w-5 text-primary" />
                   </div>
-
                   <ArrowRight className="h-5 w-5 text-primary transition-transform duration-200 group-hover:translate-x-1" />
                 </div>
-
                 <div>
                   <p className="font-semibold text-white">Pix</p>
                   <p className="text-xs text-gray-300 mt-0.5">
                     Aprovação instantânea via QR Code ou copia e cola.
                   </p>
                 </div>
-
                 <span className="absolute -top-2.5 left-4 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
                   Recomendado
                 </span>
@@ -76,21 +61,16 @@ export function ChoicePayment({
 
               {/* CARTÃO */}
               <button
-                onClick={onSelectCartao}
-                className="flex flex-col gap-3 rounded-xl border border-border 
-                bg-[#1B1C26] hover:bg-[#252736] 
-                hover:border-primary/60 transition-all duration-200 
-                hover:scale-[1.02] p-5 text-left group"
+                onClick={() => navigate(`/pagamento/${id}`)}
+                className="flex flex-col gap-3 rounded-xl border border-border bg-[#1B1C26] hover:bg-[#252736] hover:border-primary/60 transition-all duration-200 hover:scale-[1.02] p-5 text-left group"
                 style={{ boxShadow: "var(--shadow-card)" }}
               >
                 <div className="flex items-center justify-between">
                   <div className="h-10 w-10 rounded-lg bg-[#0f2f3a] border border-border flex items-center justify-center">
                     <CreditCard className="h-5 w-5 text-primary" />
                   </div>
-
                   <ArrowRight className="h-5 w-5 text-primary transition-transform duration-200 group-hover:translate-x-1" />
                 </div>
-
                 <div>
                   <p className="font-semibold text-white">Cartão</p>
                   <p className="text-xs text-gray-300 mt-0.5">
@@ -106,11 +86,8 @@ export function ChoicePayment({
               Todas as transações são seguras e criptografadas
             </div>
           </div>
-
         </div>
       </div>
-
-      {/* FOOTER */}
       <FooterSimple />
     </div>
   );

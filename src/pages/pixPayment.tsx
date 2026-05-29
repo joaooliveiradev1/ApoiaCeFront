@@ -1,12 +1,10 @@
 import { QrCode, Copy, Check, ArrowLeft } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 
-type PixPaymentProps = {
-  onBack?: () => void;
-};
-
-export function PixPayment({ onBack }: PixPaymentProps) {
+export function PixPayment() {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [doc, setDoc] = useState("");
   const [phone, setPhone] = useState("");
@@ -30,14 +28,12 @@ export function PixPayment({ onBack }: PixPaymentProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
-      
-      {/* CONTEÚDO */}
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
 
           {/* VOLTAR */}
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition mb-6"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -70,7 +66,7 @@ export function PixPayment({ onBack }: PixPaymentProps) {
             </div>
 
             <div className="grid md:grid-cols-[1fr_220px] gap-6 items-start">
-              
+
               {/* FORM */}
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
@@ -101,7 +97,6 @@ export function PixPayment({ onBack }: PixPaymentProps) {
                       className="mt-1 w-full rounded-lg bg-input border border-border px-3 py-2.5 text-sm"
                     />
                   </div>
-
                   <div>
                     <label className="text-xs text-muted-foreground">
                       Telefone
@@ -125,6 +120,14 @@ export function PixPayment({ onBack }: PixPaymentProps) {
                     <Copy className="h-4 w-4" />
                   )}
                   {copied ? "Código copiado!" : "Copiar código Pix"}
+                </button>
+
+                {/* BOTÃO CONFIRMAR */}
+                <button
+                  onClick={() => navigate("/obrigado")}
+                  className="mt-2 w-full rounded-xl py-3 font-semibold text-white bg-primary hover:scale-[1.02] transition"
+                >
+                  Confirmar Pagamento
                 </button>
               </div>
 

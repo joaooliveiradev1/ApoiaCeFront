@@ -1,9 +1,7 @@
 import { CreditCard, ArrowLeft } from "lucide-react";
 import { useState } from "react";
-
-type CardPaymentProps = {
-  onBack?: () => void;
-};
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../services/api";
 
 function formatCardNumber(v: string) {
   return v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
@@ -14,7 +12,10 @@ function formatExpiry(v: string) {
   return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
 }
 
-export function CardPayment({ onBack }: CardPaymentProps) {
+export function CardPayment() {
+  const navigate = useNavigate();
+  const { id: projetoId } = useParams<{ id: string }>();
+
   const [amount, setAmount] = useState("");
   const [holder, setHolder] = useState("");
   const [number, setNumber] = useState("");
@@ -22,6 +23,8 @@ export function CardPayment({ onBack }: CardPaymentProps) {
   const [cvv, setCvv] = useState("");
   const [installments, setInstallments] = useState(1);
   const [doc, setDoc] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   const numericAmount = Number(amount.replace(",", ".")) || 0;
 
@@ -33,27 +36,49 @@ export function CardPayment({ onBack }: CardPaymentProps) {
     cvv.length >= 3 &&
     doc.trim().length > 0;
 
-  const handlePay = () => {
-    if (!valid) return;
-    alert(`Pagamento de R$ ${numericAmount.toFixed(2)} realizado!`);
+  const handlePay = async () => {
+    if (!valid || !projetoId) return;
+    setIsLoading(true);
+    setErro(null);
+
+    try {
+      // 1. Criar assinatura
+      const { data: assinatura } = await api.post("/assinaturas", {
+        projetoId,
+        valor: numericAmount,
+        anonima: false,
+        recorrente: true,
+      });
+
+      // 2. Gerar cobrança
+      await api.post("/pagamentos/gerar", {
+        assinaturaId: assinatura.id,
+      });
+
+      navigate("/obrigado");
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 403) setErro("Você não tem permissão para realizar este pagamento.");
+      else if (status === 400) setErro("Dados inválidos. Verifique os campos.");
+      else setErro("Erro ao processar pagamento. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
-      
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-2xl">
 
-          {/* VOLTAR */}
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition mb-6"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar
           </button>
 
-          {/* HEADER */}
           <header className="text-center mb-10">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
               Pagamento com Cartão
@@ -63,7 +88,6 @@ export function CardPayment({ onBack }: CardPaymentProps) {
             </p>
           </header>
 
-          {/* CARD */}
           <div
             className="rounded-2xl border border-border p-6"
             style={{
@@ -80,26 +104,18 @@ export function CardPayment({ onBack }: CardPaymentProps) {
 
             <div className="space-y-4">
 
-              {/* VALOR */}
               <div>
-                <label className="text-xs text-muted-foreground">
-                  Valor (R$)
-                </label>
+                <label className="text-xs text-muted-foreground">Valor (R$)</label>
                 <input
                   value={amount}
-                  onChange={(e) =>
-                    setAmount(e.target.value.replace(/[^\d.,]/g, ""))
-                  }
+                  onChange={(e) => setAmount(e.target.value.replace(/[^\d.,]/g, ""))}
                   placeholder="50,00"
                   className="mt-1 w-full rounded-lg bg-input border border-border px-3 py-2.5 text-sm text-primary font-semibold"
                 />
               </div>
 
-              {/* NOME */}
               <div>
-                <label className="text-xs text-muted-foreground">
-                  Nome no cartão
-                </label>
+                <label className="text-xs text-muted-foreground">Nome no cartão</label>
                 <input
                   value={holder}
                   onChange={(e) => setHolder(e.target.value.toUpperCase())}
@@ -108,57 +124,39 @@ export function CardPayment({ onBack }: CardPaymentProps) {
                 />
               </div>
 
-              {/* NÚMERO */}
               <div>
-                <label className="text-xs text-muted-foreground">
-                  Número do cartão
-                </label>
+                <label className="text-xs text-muted-foreground">Número do cartão</label>
                 <input
                   value={number}
-                  onChange={(e) =>
-                    setNumber(formatCardNumber(e.target.value))
-                  }
+                  onChange={(e) => setNumber(formatCardNumber(e.target.value))}
                   placeholder="0000 0000 0000 0000"
                   className="mt-1 w-full rounded-lg bg-input border border-border px-3 py-2.5 text-sm font-mono"
                 />
               </div>
 
-              {/* DATA + CVV */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground">
-                    Validade
-                  </label>
+                  <label className="text-xs text-muted-foreground">Validade</label>
                   <input
                     value={expiry}
-                    onChange={(e) =>
-                      setExpiry(formatExpiry(e.target.value))
-                    }
+                    onChange={(e) => setExpiry(formatExpiry(e.target.value))}
                     placeholder="MM/AA"
                     className="mt-1 w-full rounded-lg bg-input border border-border px-3 py-2.5 text-sm"
                   />
                 </div>
-
                 <div>
-                  <label className="text-xs text-muted-foreground">
-                    CVV
-                  </label>
+                  <label className="text-xs text-muted-foreground">CVV</label>
                   <input
                     value={cvv}
-                    onChange={(e) =>
-                      setCvv(e.target.value.replace(/\D/g, "").slice(0, 4))
-                    }
+                    onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
                     placeholder="123"
                     className="mt-1 w-full rounded-lg bg-input border border-border px-3 py-2.5 text-sm"
                   />
                 </div>
               </div>
 
-              {/* CPF */}
               <div>
-                <label className="text-xs text-muted-foreground">
-                  CPF / CNPJ
-                </label>
+                <label className="text-xs text-muted-foreground">CPF / CNPJ</label>
                 <input
                   value={doc}
                   onChange={(e) => setDoc(e.target.value)}
@@ -167,11 +165,8 @@ export function CardPayment({ onBack }: CardPaymentProps) {
                 />
               </div>
 
-              {/* PARCELAS */}
               <div>
-                <label className="text-xs text-muted-foreground">
-                  Parcelas
-                </label>
+                <label className="text-xs text-muted-foreground">Parcelas</label>
                 <select
                   value={installments}
                   onChange={(e) => setInstallments(Number(e.target.value))}
@@ -185,13 +180,18 @@ export function CardPayment({ onBack }: CardPaymentProps) {
                 </select>
               </div>
 
-              {/* BOTÃO */}
+              {erro && (
+                <p className="text-sm text-red-400 text-center bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2">
+                  {erro}
+                </p>
+              )}
+
               <button
                 onClick={handlePay}
-                disabled={!valid}
+                disabled={!valid || isLoading}
                 className="mt-4 w-full rounded-xl py-3 font-semibold text-white bg-primary hover:scale-[1.02] transition disabled:opacity-50"
               >
-                Pagar com Cartão
+                {isLoading ? "Processando..." : "Pagar com Cartão"}
               </button>
             </div>
           </div>

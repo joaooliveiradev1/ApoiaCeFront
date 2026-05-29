@@ -28,7 +28,7 @@ export function SignInCard() {
 
     try {
       await login({ email: form.email, senha: form.senha });
-      navigate("/");
+      navigate("/home");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err?.response?.status;

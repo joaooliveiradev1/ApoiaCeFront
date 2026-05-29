@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Heart, Share2, MessageCircle, CheckCircle } from "lucide-react";
 
 interface ProjectHeroProps {
+  id?: string;
   category?: string;
   title?: string;
   subtitle?: string;
@@ -15,6 +17,7 @@ interface ProjectHeroProps {
 }
 
 export function ProjectHero({
+  id = "",
   category = "RPG",
   title = "Revista Tormenta20",
   subtitle = "Aventure-se no maior RPG do Brasil!",
@@ -26,6 +29,7 @@ export function ProjectHero({
   creatorName = "Jambô Editora",
   creatorAvatarUrl = null,
 }: ProjectHeroProps) {
+  const navigate = useNavigate();
   const [followed, setFollowed] = useState(false);
   const percent = Math.min(Math.round((raised / goal) * 100), 100);
 
@@ -117,7 +121,10 @@ export function ProjectHero({
             </div>
 
             {/* CTA */}
-            <button className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-purple-600 to-purple-500 hover:brightness-110 transition-all shadow-lg shadow-purple-900/40">
+            <button
+              onClick={() => navigate(`/escolha-pagamento/${id}`)}
+              className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-purple-600 to-purple-500 hover:brightness-110 transition-all shadow-lg shadow-purple-900/40"
+            >
               APOIAR ESTE PROJETO
             </button>
 

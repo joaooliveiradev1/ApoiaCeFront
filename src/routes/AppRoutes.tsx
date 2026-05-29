@@ -4,12 +4,18 @@ import { SignIn } from "../pages/sign_in";
 import { SignUp } from "../pages/sign_up";
 import { PreMenu } from "../pages/pre_menu";
 import { AlterData } from "../pages/alterData";
-import { CreateProject } from "../pages/CreateProject";
+import { CreateProject } from "../pages/createProject";
+import { MainPage } from "../pages/main_page";
+import { ProjectPage } from "../pages/projectPage";
+import { CardPayment } from "../pages/cardPayment";
+import { Thanks } from "../pages/thanks";
+import { ChoicePayment } from "../pages/choicePayment";
+import { PixPayment } from "../pages/pixPayment";
 import type { JSX } from "react";
 
 function PublicRoute({ children }: { children: JSX.Element }) {
   const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? children : <Navigate to="/" replace />;
+  return !isAuthenticated ? children : <Navigate to="/home" replace />;
 }
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
@@ -39,6 +45,14 @@ export function AppRoutes() {
           }
         />
         <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <MainPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/perfil"
           element={
             <PrivateRoute>
@@ -54,6 +68,46 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/projeto/:id"
+          element={
+            <PrivateRoute>
+              <ProjectPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/pagamento/:id"
+          element={
+            <PrivateRoute>
+              <CardPayment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/obrigado"
+          element={
+            <PrivateRoute>
+              <Thanks />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/escolha-pagamento/:id"
+          element={
+          <PrivateRoute>
+            <ChoicePayment />
+          </PrivateRoute>
+          }
+        />
+        <Route
+          path="/pagamento-pix/:id"
+          element={
+          <PrivateRoute>
+            <PixPayment />
+          </PrivateRoute>
+        }
+/>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

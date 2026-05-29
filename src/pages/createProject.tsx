@@ -77,7 +77,7 @@ export function CreateProject() {
     return parseFloat(formatted.replace(/\./g, "").replace(",", ".")) || 0;
   };
 
-  const buildPayload = (status: "RASCUNHO" | "PUBLICADO") => ({
+  const buildPayload = () => ({
     titulo,
     descricao,
     metaValor: parseGoal(metaValor),
@@ -86,12 +86,10 @@ export function CreateProject() {
     categoriaId,
     videoUrl: videoUrl || undefined,
     capaUrl: capaUrl || bannerDataUrl || undefined,
-    status,
   });
 
   const handlePublish = async () => {
     setErro(null);
-
     if (!titulo) return setErro("Título é obrigatório.");
     if (!categoriaId) return setErro("Selecione uma categoria.");
     if (!metaValor) return setErro("Meta de financiamento é obrigatória.");
@@ -99,8 +97,9 @@ export function CreateProject() {
 
     setIsLoading(true);
     try {
-      await api.post("/projetos", buildPayload("PUBLICADO"));
-      navigate("/");
+      const { data } = await api.post<{ id: string }>("/projetos", buildPayload());
+      await api.patch(`/projetos/${data.id}/status?status=PUBLICADO`);
+      navigate("/home");
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 400) setErro("Dados inválidos. Verifique os campos.");
@@ -112,16 +111,16 @@ export function CreateProject() {
   };
 
   const handleSaveDraft = async () => {
+    setErro(null);
     if (!titulo) return setErro("Título é obrigatório para salvar rascunho.");
     if (!categoriaId) return setErro("Selecione uma categoria.");
     if (!metaValor) return setErro("Meta de financiamento é obrigatória.");
     if (!dataFim) return setErro("Data de encerramento é obrigatória.");
 
     setIsSaving(true);
-    setErro(null);
     try {
-      await api.post("/projetos", buildPayload("RASCUNHO"));
-      navigate("/");
+      await api.post("/projetos", buildPayload()); // já salva como RASCUNHO por padrão
+      navigate("/home");
     } catch {
       setErro("Erro ao salvar rascunho.");
     } finally {
