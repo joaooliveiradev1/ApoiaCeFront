@@ -9,7 +9,7 @@ function calcularDiasRestantes(dataFim: string | null): number {
 }
 
 interface ListProjectsProps {
-  activeCategory: string;
+  activeCategory: string; // Agora isso é um ID (ou string vazia)
   search: string;
 }
 
@@ -22,9 +22,10 @@ export function ListProjects({ activeCategory, search }: ListProjectsProps) {
     setIsLoading(true);
     setErro(null);
 
-    const categoria = activeCategory === "Todos" ? undefined : activeCategory;
+    // Se for string vazia (""), manda undefined para a API não filtrar por ID
+    const categoriaId = activeCategory === "" ? undefined : activeCategory;
 
-    projetoService.listar(0, 12, categoria, search || undefined)
+    projetoService.listar(0, 12, categoriaId, search || undefined)
       .then((data) => setProjetos(data.content))
       .catch(() => setErro("Erro ao carregar projetos."))
       .finally(() => setIsLoading(false));

@@ -21,4 +21,16 @@ export const authService = {
   logout: () => {
     localStorage.removeItem("token");
   },
+
+  // 🛠️ NOVO: Método para a 1ª Etapa (Verificar e-mail e gerar código)
+  solicitarTokenSenha: async (email: string): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>("/auth/forgot-password", { email });
+    return response.data;
+  },
+
+  // 🛠️ NOVO: Método para a 2ª Etapa (Validar código e trocar a senha)
+  redefinirSenha: async (data: { email: string; token: string; novaSenha: string }): Promise<{ message: string }> => {
+    const response = await api.post<{ message: string }>("/auth/reset-password", data);
+    return response.data;
+  },
 };

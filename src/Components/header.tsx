@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/Components/ui/button";
-import { Search, Menu, User, Gamepad2, LogOut } from "lucide-react";
+import { Menu, User, Gamepad2, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/Components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -48,14 +48,6 @@ export function Header() {
           <div className="h-6 w-px bg-white/10" />
 
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-white rounded-full"
-            >
-              <Search className="w-5 h-5" />
-            </Button>
-
             {!usuario && (
               <Link to="/login">
                 <Button
@@ -91,9 +83,6 @@ export function Header() {
 
         {/* Mobile Nav Toggle */}
         <div className="md:hidden flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <Search className="w-5 h-5" />
-          </Button>
           <Sheet>
             <SheetTrigger asChild>
               <Button

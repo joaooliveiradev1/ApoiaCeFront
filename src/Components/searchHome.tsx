@@ -1,19 +1,16 @@
 import { motion } from "framer-motion";
-import { Search, SlidersHorizontal } from "lucide-react";
-
-const categories = [
-  "Todos", "Games", "RPG", "Quadrinhos",
-  "Tecnologia", "Música", "Boardgames",
-];
+import { Search } from "lucide-react";
+import type { Categoria } from "../services/categoriaService";
 
 interface SearchHomeProps {
-  activeCategory: string;
-  setActiveCategory: (cat: string) => void;
+  categorias: Categoria[];
+  activeCategoryId: string;
+  setActiveCategoryId: (id: string) => void;
   search: string;
   setSearch: (val: string) => void;
 }
 
-export function SearchHome({ activeCategory, setActiveCategory, search, setSearch }: SearchHomeProps) {
+export function SearchHome({ categorias, activeCategoryId, setActiveCategoryId, search, setSearch }: SearchHomeProps) {
   return (
     <section className="bg-catalog-bg px-4 py-6">
       <div className="mx-auto max-w-5xl">
@@ -58,17 +55,30 @@ export function SearchHome({ activeCategory, setActiveCategory, search, setSearc
           transition={{ duration: 0.4, delay: 0.3 }}
           className="mb-10 flex flex-wrap items-center justify-center gap-3"
         >
-          {categories.map((cat) => (
+          {/* Botão estático "Todos" */}
+          <button
+            onClick={() => setActiveCategoryId("")}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
+              activeCategoryId === ""
+                ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-105"
+                : "bg-catalog-card text-catalog-muted ring-1 ring-catalog-border hover:text-catalog-text"
+            }`}
+          >
+            Todos
+          </button>
+
+          {/* Botões dinâmicos vindos do Banco de Dados */}
+          {categorias.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={cat.id}
+              onClick={() => setActiveCategoryId(cat.id)}
               className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${
-                activeCategory === cat
+                activeCategoryId === cat.id
                   ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-105"
                   : "bg-catalog-card text-catalog-muted ring-1 ring-catalog-border hover:text-catalog-text"
               }`}
             >
-              {cat}
+              {cat.nome}
             </button>
           ))}
         </motion.div>

@@ -9,6 +9,7 @@ export interface RegisterRequest {
   nome: string;
   email: string;
   senha: string;
+  role: "APOIADOR" | "CRIADOR";
 }
 
 //  Responses

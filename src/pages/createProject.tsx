@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ImageIcon, Lightbulb, Upload, ArrowRight, Save,
+  ImageIcon, Lightbulb, Upload, ArrowRight, ArrowLeft,
   Type, FileText, Target, Sparkles, Loader2,
 } from "lucide-react";
 import api from "../services/api";
 import { categoriaService, type Categoria } from "../services/categoriaService";
+
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 function FooterSimple() {
   return (
@@ -47,20 +50,46 @@ export function CreateProject() {
   const [capaUrl, setCapaUrl] = useState("");
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [bannerDataUrl, setBannerDataUrl] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     categoriaService.listar().then(setCategorias);
   }, []);
 
-  const handleFile = (file: File | null) => {
+  const handleFile = async (file: File | null) => {
     if (!file) return;
+
+    // Preview local imediato
     const reader = new FileReader();
-    reader.onload = (e) => setBannerDataUrl(e.target?.result as string);
+    reader.onload = (e) => setBannerPreview(e.target?.result as string);
     reader.readAsDataURL(file);
+
+    // Upload para o Cloudinary
+    setIsUploading(true);
+    setErro(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        { method: "POST", body: formData }
+      );
+
+      if (!response.ok) throw new Error("Falha no upload");
+
+      const data = await response.json();
+      setCapaUrl(data.secure_url);
+    } catch {
+      setErro("Erro ao fazer upload da imagem. Tente novamente.");
+      setBannerPreview(null);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const formatGoal = (raw: string) => {
@@ -77,16 +106,27 @@ export function CreateProject() {
     return parseFloat(formatted.replace(/\./g, "").replace(",", ".")) || 0;
   };
 
-  const buildPayload = () => ({
-    titulo,
-    descricao,
-    metaValor: parseGoal(metaValor),
-    dataFim,
-    tipoAssinatura,
-    categoriaId,
-    videoUrl: videoUrl || undefined,
-    capaUrl: capaUrl || bannerDataUrl || undefined,
-  });
+  const submitProjeto = async () => {
+    const projetoJson = JSON.stringify({
+      titulo,
+      descricao,
+      metaValor: parseGoal(metaValor),
+      dataFim,
+      tipoAssinatura,
+      categoriaId,
+      videoUrl: videoUrl || undefined,
+      capaUrl: capaUrl || undefined,
+    });
+
+    const formData = new FormData();
+    formData.append("projeto", new Blob([projetoJson], { type: "application/json" }));
+
+    const response = await api.post("/projetos", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return response;
+  };
 
   const handlePublish = async () => {
     setErro(null);
@@ -94,11 +134,17 @@ export function CreateProject() {
     if (!categoriaId) return setErro("Selecione uma categoria.");
     if (!metaValor) return setErro("Meta de financiamento é obrigatória.");
     if (!dataFim) return setErro("Data de encerramento é obrigatória.");
+    if (isUploading) return setErro("Aguarde o upload da imagem finalizar.");
 
     setIsLoading(true);
     try {
-      const { data } = await api.post<{ id: string }>("/projetos", buildPayload());
-      await api.patch(`/projetos/${data.id}/status?status=PUBLICADO`);
+      await submitProjeto();
+      
+      alert(
+        "Projeto enviado com sucesso!\n\n" +
+        "Seu projeto passará por uma análise da equipe APOIACE e será aprovado em até 2 dias úteis."
+      );
+      
       navigate("/home");
     } catch (err: any) {
       const status = err?.response?.status;
@@ -107,24 +153,6 @@ export function CreateProject() {
       else setErro("Erro ao criar projeto. Tente novamente.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSaveDraft = async () => {
-    setErro(null);
-    if (!titulo) return setErro("Título é obrigatório para salvar rascunho.");
-    if (!categoriaId) return setErro("Selecione uma categoria.");
-    if (!metaValor) return setErro("Meta de financiamento é obrigatória.");
-    if (!dataFim) return setErro("Data de encerramento é obrigatória.");
-
-    setIsSaving(true);
-    try {
-      await api.post("/projetos", buildPayload()); // já salva como RASCUNHO por padrão
-      navigate("/home");
-    } catch {
-      setErro("Erro ao salvar rascunho.");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -238,14 +266,31 @@ export function CreateProject() {
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="group relative w-full aspect-[16/9] rounded-xl border border-dashed border-border hover:border-primary/60 bg-[#1B1C26] hover:bg-[#252736] transition-all overflow-hidden flex items-center justify-center"
+                    disabled={isUploading}
+                    className="group relative w-full aspect-[16/9] rounded-xl border border-dashed border-border hover:border-primary/60 bg-[#1B1C26] hover:bg-[#252736] transition-all overflow-hidden flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    {bannerDataUrl ? (
-                      <img src={bannerDataUrl} alt="Banner" className="absolute inset-0 h-full w-full object-cover" />
+                    {bannerPreview ? (
+                      <>
+                        <img src={bannerPreview} alt="Banner" className="absolute inset-0 h-full w-full object-cover" />
+                        {isUploading && (
+                          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
+                            <Loader2 className="h-6 w-6 text-white animate-spin" />
+                            <span className="text-xs text-white">Enviando para Cloudinary...</span>
+                          </div>
+                        )}
+                        {!isUploading && capaUrl && (
+                          <div className="absolute bottom-2 right-2 bg-green-500/90 text-white text-xs px-2 py-1 rounded-full">
+                            ✓ Upload concluído
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <div className="h-10 w-10 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center">
-                          <Upload className="h-4 w-4 text-primary" />
+                          {isUploading
+                            ? <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                            : <Upload className="h-4 w-4 text-primary" />
+                          }
                         </div>
                         <span className="text-xs font-medium">Click to upload (1920×1080)</span>
                       </div>
@@ -258,7 +303,10 @@ export function CreateProject() {
                   <input
                     type="text"
                     value={capaUrl}
-                    onChange={(e) => setCapaUrl(e.target.value)}
+                    onChange={(e) => {
+                      setCapaUrl(e.target.value);
+                      setBannerPreview(e.target.value || null);
+                    }}
                     placeholder="https://..."
                     className="w-full rounded-lg bg-[#1B1C26] border border-border focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/20 px-4 py-2.5 text-sm placeholder:text-muted-foreground/60 transition"
                   />
@@ -352,22 +400,27 @@ export function CreateProject() {
               )}
 
               {/* AÇÕES */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-3">
                 <button
                   type="button"
                   onClick={handlePublish}
-                  disabled={isLoading}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition shadow-[0_8px_24px_-8px_var(--primary)] disabled:opacity-50"
+                  disabled={isLoading || isUploading}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-primary-foreground bg-primary hover:opacity-90 transition shadow-[0_8px_24px_-8px_var(--primary)] disabled:opacity-50"
                 >
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><ArrowRight className="h-4 w-4" /> Publicar Projeto</>}
+                  {isLoading
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <><ArrowRight className="h-4 w-4" /> Publicar Projeto</>
+                  }
                 </button>
+                
+                {/* BOTÃO VOLTAR REINSERIDO AQUI */}
                 <button
                   type="button"
-                  onClick={handleSaveDraft}
-                  disabled={isSaving}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium border border-border bg-[#1B1C26] hover:bg-[#252736] hover:border-primary/40 transition disabled:opacity-50"
+                  onClick={() => navigate(-1)}
+                  disabled={isLoading || isUploading}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium border border-border bg-[#1B1C26] hover:bg-[#252736] hover:border-white/20 transition disabled:opacity-50"
                 >
-                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4" /> Salvar Rascunho</>}
+                  <ArrowLeft className="h-4 w-4" /> Voltar
                 </button>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { SignIn } from "../pages/sign_in";
 import { SignUp } from "../pages/sign_up";
+import { ForgotPassword } from "../pages/forgotPassword"; // 🛠️ NOVO: Import da nova página
 import { PreMenu } from "../pages/pre_menu";
 import { AlterData } from "../pages/alterData";
 import { CreateProject } from "../pages/createProject";
@@ -11,6 +12,7 @@ import { CardPayment } from "../pages/cardPayment";
 import { Thanks } from "../pages/thanks";
 import { ChoicePayment } from "../pages/choicePayment";
 import { PixPayment } from "../pages/pixPayment";
+import { PageAdmin } from "../pages/pageAdmin";
 import type { JSX } from "react";
 
 function PublicRoute({ children }: { children: JSX.Element }) {
@@ -41,6 +43,15 @@ export function AppRoutes() {
           element={
             <PublicRoute>
               <SignUp />
+            </PublicRoute>
+          }
+        />
+        {/* 🛠️ NOVO: Rota pública para recuperação de senha */}
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
             </PublicRoute>
           }
         />
@@ -95,19 +106,20 @@ export function AppRoutes() {
         <Route
           path="/escolha-pagamento/:id"
           element={
-          <PrivateRoute>
-            <ChoicePayment />
-          </PrivateRoute>
+            <PrivateRoute>
+              <ChoicePayment />
+            </PrivateRoute>
           }
         />
         <Route
           path="/pagamento-pix/:id"
           element={
-          <PrivateRoute>
-            <PixPayment />
-          </PrivateRoute>
-        }
-/>
+            <PrivateRoute>
+              <PixPayment />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/admin" element={<PageAdmin />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

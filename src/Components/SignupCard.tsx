@@ -4,8 +4,10 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { Gamepad2, Mail, Lock, User, ArrowLeft, Loader2 } from "lucide-react";
+import { Gamepad2, Mail, Lock, User, ArrowLeft, Loader2, Heart, Lightbulb } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+
+type Role = "APOIADOR" | "CRIADOR";
 
 export function SignupCard() {
   const { register } = useAuth();
@@ -17,6 +19,7 @@ export function SignupCard() {
     senha: "",
     confirmarSenha: "",
   });
+  const [role, setRole] = useState<Role>("APOIADOR");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +46,7 @@ export function SignupCard() {
     setError(null);
 
     try {
-      await register({ nome: form.nome, email: form.email, senha: form.senha });
+      await register({ nome: form.nome, email: form.email, senha: form.senha, role });
       navigate("/");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -100,6 +103,45 @@ export function SignupCard() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Seleção de tipo de conta */}
+            <div className="space-y-2">
+              <Label className="text-white/80">Tipo de conta</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setRole("APOIADOR")}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                    role === "APOIADOR"
+                      ? "bg-secondary/15 border-secondary/50 text-white"
+                      : "bg-background/50 border-white/10 text-muted-foreground hover:border-white/20"
+                  }`}
+                >
+                  <Heart className={`w-5 h-5 ${role === "APOIADOR" ? "text-secondary" : ""}`} />
+                  <span className="text-sm font-medium">Apoiador</span>
+                  <span className="text-xs text-center leading-snug opacity-60">
+                    Apoia projetos da comunidade
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setRole("CRIADOR")}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                    role === "CRIADOR"
+                      ? "bg-secondary/15 border-secondary/50 text-white"
+                      : "bg-background/50 border-white/10 text-muted-foreground hover:border-white/20"
+                  }`}
+                >
+                  <Lightbulb className={`w-5 h-5 ${role === "CRIADOR" ? "text-secondary" : ""}`} />
+                  <span className="text-sm font-medium">Criador</span>
+                  <span className="text-xs text-center leading-snug opacity-60">
+                    Cria e publica seus projetos
+                  </span>
+                </button>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="nome" className="text-white/80">
                 Nome ou Nickname

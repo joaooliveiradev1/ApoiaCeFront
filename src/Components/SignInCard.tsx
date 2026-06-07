@@ -8,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 export function SignInCard() {
-  const { login } = useAuth();
+  const { login, usuario } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ email: "", senha: "" });
@@ -28,7 +28,20 @@ export function SignInCard() {
 
     try {
       await login({ email: form.email, senha: form.senha });
-      navigate("/home");
+
+      // Busca o usuário atualizado do contexto via localStorage para pegar o role
+      const token = localStorage.getItem("token");
+      if (token) {
+        const { jwtDecode } = await import("jwt-decode");
+        const decoded = jwtDecode<{ role: string }>(token);
+        if (decoded.role === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/home");
+        }
+      } else {
+        navigate("/home");
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err?.response?.status;
@@ -105,17 +118,17 @@ export function SignInCard() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="senha" className="text-white/80">
-                  Senha
-                </Label>
-                <a
-                  href="#"
-                  className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
-                >
-                  Esqueceu a senha?
-                </a>
-              </div>
+  <div className="flex justify-between items-center">
+    <Label htmlFor="senha" className="text-white/80">
+      Senha
+    </Label>
+    <Link
+      to="/forgot-password"
+      className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+    >
+      Esqueceu a senha?
+    </Link>
+  </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input

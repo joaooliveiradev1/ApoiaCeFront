@@ -163,8 +163,6 @@ export function ProjectHero({
                 </div>
               </div>
               <button className="flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors">
-                <MessageCircle className="w-4 h-4" />
-                Falar com o criador
               </button>
             </div>
 

@@ -1,15 +1,19 @@
 import { Header } from "@/components/header";
-import { ProfileForm } from "@/components/alterPerfilBox";
 import { Footer } from "@/components/footer";
+import { ProfileForm } from "@/components/alterPerfilBox";
+import { ProfileFormCriador } from "@/components/ProfileFormCriador";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AlterData() {
+  const { usuario } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header/>
+      <Header />
       <main className="flex-1 pt-20">
-        <ProfileForm />
+        {usuario?.role === "CRIADOR" ? <ProfileFormCriador /> : <ProfileForm />}
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
