@@ -1,8 +1,8 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { ProfileForm } from "@/components/alterPerfilBox";
-import { ProfileFormCriador } from "@/components/ProfileFormCriador";
 import { useAuth } from "@/hooks/useAuth";
+import { FooterSimple } from "@/Components/footerSimple";
+import { Header } from "@/Components/header";
+import { ProfileFormCriador } from "@/Components/Profileformcriador";
+import { ProfileForm } from "@/Components/alterPerfilBox";
 
 export function AlterData() {
   const { usuario } = useAuth();
@@ -13,7 +13,7 @@ export function AlterData() {
       <main className="flex-1 pt-20">
         {usuario?.role === "CRIADOR" ? <ProfileFormCriador /> : <ProfileForm />}
       </main>
-      <Footer />
+      <FooterSimple />
     </div>
   );
 }

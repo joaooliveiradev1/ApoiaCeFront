@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Header } from "../components/header";
-import { ProjectHero } from "../components/projectHero";
-import { ProjectTabs } from "../components/projectTabs";
-import { Footer } from "../components/footer";
 import api from "../services/api";
+import { Header } from "@/Components/header";
+import { ProjectHero } from "@/Components/projectHero";
+import { ProjectTabs } from "@/Components/projectTabs";
+import { Footer } from "@/Components/footer";
 
 interface Projeto {
   id: string;
@@ -33,21 +33,22 @@ export function ProjectPage() {
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-  if (!id) return;
+    if (!id) return;
 
-  const carregar = () => {
-    setIsLoading(true);
-    api.get<Projeto>(`/projetos/${id}`)
-      .then((res) => setProjeto(res.data))
-      .catch(() => setErro("Erro ao carregar projeto."))
-      .finally(() => setIsLoading(false));
-  };
+    const carregar = () => {
+      setIsLoading(true);
+      api
+        .get<Projeto>(`/projetos/${id}`)
+        .then((res) => setProjeto(res.data))
+        .catch(() => setErro("Erro ao carregar projeto."))
+        .finally(() => setIsLoading(false));
+    };
 
-  carregar();
+    carregar();
 
-  window.addEventListener("focus", carregar);
-  return () => window.removeEventListener("focus", carregar);
-}, [id]);
+    window.addEventListener("focus", carregar);
+    return () => window.removeEventListener("focus", carregar);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -70,7 +71,7 @@ export function ProjectPage() {
       <Header />
       <main className="flex-1 pt-20">
         <ProjectHero
-          id={projeto.id} 
+          id={projeto.id}
           category={projeto.categoriaNome}
           title={projeto.titulo}
           subtitle={projeto.descricao?.slice(0, 80) + "..."}
@@ -82,6 +83,7 @@ export function ProjectPage() {
           creatorName={projeto.criadorNome}
         />
         <ProjectTabs
+          projetoId={projeto.id}
           title={projeto.titulo}
           description={projeto.descricao}
         />

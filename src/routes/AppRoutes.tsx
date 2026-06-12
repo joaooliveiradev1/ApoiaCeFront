@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { AdminRoute } from "./AdminRoute";
 import { SignIn } from "../pages/sign_in";
 import { SignUp } from "../pages/sign_up";
-import { ForgotPassword } from "../pages/forgotPassword"; // 🛠️ NOVO: Import da nova página
+import { ForgotPassword } from "../pages/forgotPassword";
 import { PreMenu } from "../pages/pre_menu";
 import { AlterData } from "../pages/alterData";
 import { CreateProject } from "../pages/createProject";
@@ -21,7 +22,16 @@ function PublicRoute({ children }: { children: JSX.Element }) {
 }
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0d0f] text-white">
+        Carregando...
+      </div>
+    );
+  }
+
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
@@ -30,6 +40,7 @@ export function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<PreMenu />} />
+
         <Route
           path="/login"
           element={
@@ -38,6 +49,7 @@ export function AppRoutes() {
             </PublicRoute>
           }
         />
+
         <Route
           path="/register"
           element={
@@ -46,7 +58,7 @@ export function AppRoutes() {
             </PublicRoute>
           }
         />
-        {/* 🛠️ NOVO: Rota pública para recuperação de senha */}
+
         <Route
           path="/forgot-password"
           element={
@@ -55,6 +67,7 @@ export function AppRoutes() {
             </PublicRoute>
           }
         />
+
         <Route
           path="/home"
           element={
@@ -63,6 +76,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/perfil"
           element={
@@ -71,6 +85,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/criar-projeto"
           element={
@@ -79,6 +94,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/projeto/:id"
           element={
@@ -87,6 +103,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/pagamento/:id"
           element={
@@ -95,6 +112,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/obrigado"
           element={
@@ -103,6 +121,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/escolha-pagamento/:id"
           element={
@@ -111,6 +130,7 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/pagamento-pix/:id"
           element={
@@ -119,7 +139,16 @@ export function AppRoutes() {
             </PrivateRoute>
           }
         />
-        <Route path="/admin" element={<PageAdmin />} />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <PageAdmin />
+            </AdminRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

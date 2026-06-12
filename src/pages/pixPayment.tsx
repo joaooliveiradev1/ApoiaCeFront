@@ -1,4 +1,4 @@
-import { QrCode, Copy, Check, ArrowLeft } from "lucide-react";
+import { QrCode, Copy, Check, ArrowLeft, FlaskConical } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -28,6 +28,7 @@ export function PixPayment() {
   const [amount, setAmount] = useState("50,00");
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSimulando, setIsSimulando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
   const [assinaturaId, setAssinaturaId] = useState<string | null>(null);
@@ -105,6 +106,43 @@ export function PixPayment() {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSimularPagamento = async () => {
+    if (!pagamentoId || !projetoId) return;
+
+    try {
+      setIsSimulando(true);
+      setErro(null);
+
+      await api.post(`/pagamentos/${pagamentoId}/simular`);
+      setStatus("CONFIRMADO");
+
+      setTimeout(() => {
+        navigate(`/projetos/${projetoId}`, {
+          state: {
+            pagamentoConfirmado: true,
+            valorAdicionado: numericAmount,
+            apoiadoresAdicionados: 1,
+          },
+        });
+      }, 1200);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const statusCode = error.response?.status;
+        if (statusCode === 404) {
+          setErro("Pagamento não encontrado para simulação.");
+        } else if (statusCode === 400) {
+          setErro("Este pagamento já foi processado.");
+        } else {
+          setErro("Erro ao simular pagamento. Tente novamente.");
+        }
+      } else {
+        setErro("Erro inesperado ao simular pagamento.");
+      }
+    } finally {
+      setIsSimulando(false);
     }
   };
 
@@ -218,7 +256,13 @@ export function PixPayment() {
                     <div className="rounded-xl border border-border bg-[#1B1C26] p-4 text-sm text-muted-foreground">
                       <p>
                         Status da cobrança:{" "}
-                        <span className="font-semibold text-white">
+                        <span
+                          className={`font-semibold ${
+                            status === "CONFIRMADO"
+                              ? "text-green-400"
+                              : "text-white"
+                          }`}
+                        >
                           {status ?? "PENDENTE"}
                         </span>
                       </p>
@@ -235,6 +279,20 @@ export function PixPayment() {
                         </p>
                       )}
                     </div>
+
+                    {/* Botão simular — dev mode */}
+                    <button
+                      onClick={handleSimularPagamento}
+                      disabled={isSimulando || status === "CONFIRMADO"}
+                      className="flex items-center justify-center gap-2 w-full rounded-xl py-3 font-semibold text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition"
+                    >
+                      <FlaskConical className="h-4 w-4" />
+                      {isSimulando
+                        ? "Simulando..."
+                        : status === "CONFIRMADO"
+                          ? "✅ Pagamento confirmado!"
+                          : "Simular Pagamento (Dev)"}
+                    </button>
 
                     <button
                       onClick={() => navigate("/obrigado")}

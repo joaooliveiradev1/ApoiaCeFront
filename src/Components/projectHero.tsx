@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Share2, MessageCircle, CheckCircle } from "lucide-react";
+import { Heart, Share2, CheckCircle } from "lucide-react";
 
 interface ProjectHeroProps {
   id?: string;
@@ -37,9 +37,8 @@ export function ProjectHero({
     value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-white px-4 py-10 md:px-8">
+    <div className="bg-[#0f0f1a] text-white px-4 py-10 md:px-8">
       <div className="mx-auto max-w-5xl">
-
         {/* Tags */}
         <div className="flex items-center gap-3 mb-4">
           <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-600/30 text-purple-400 border border-purple-500/40">
@@ -59,7 +58,6 @@ export function ProjectHero({
 
         {/* Main content */}
         <div className="flex flex-col md:flex-row gap-8">
-
           {/* Image */}
           <div className="flex-1">
             <div className="w-full aspect-video rounded-2xl overflow-hidden bg-[#1a1a2e] border border-white/10">
@@ -79,7 +77,6 @@ export function ProjectHero({
 
           {/* Sidebar */}
           <div className="w-full md:w-72 flex flex-col gap-5">
-
             {/* Raised */}
             <div>
               <p className="text-3xl font-black text-white">
@@ -98,7 +95,7 @@ export function ProjectHero({
               </div>
               <div className="h-2 w-full rounded-full bg-white/10">
                 <div
-                  className="h-2 rounded-full bg-gradient-to-r from-purple-600 to-purple-400 transition-all"
+                  className="h-2 rounded-full bg-linear-to-r from-purple-600 to-purple-400 transition-all"
                   style={{ width: `${percent}%` }}
                 />
               </div>
@@ -123,7 +120,7 @@ export function ProjectHero({
             {/* CTA */}
             <button
               onClick={() => navigate(`/escolha-pagamento/${id}`)}
-              className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-purple-600 to-purple-500 hover:brightness-110 transition-all shadow-lg shadow-purple-900/40"
+              className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-linear-to-r from-purple-600 to-purple-500 hover:brightness-110 transition-all shadow-lg shadow-purple-900/40"
             >
               APOIAR ESTE PROJETO
             </button>
@@ -138,7 +135,9 @@ export function ProjectHero({
                     : "border-white/10 text-white/60 hover:border-white/30 hover:text-white"
                 }`}
               >
-                <Heart className={`w-4 h-4 ${followed ? "fill-purple-400" : ""}`} />
+                <Heart
+                  className={`w-4 h-4 ${followed ? "fill-purple-400" : ""}`}
+                />
                 Seguir
               </button>
               <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 text-sm font-medium text-white/60 hover:border-white/30 hover:text-white transition-all">
@@ -152,20 +151,26 @@ export function ProjectHero({
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#1a1a2e] border border-white/10 overflow-hidden flex items-center justify-center text-white/30 text-xs">
                   {creatorAvatarUrl ? (
-                    <img src={creatorAvatarUrl} alt={creatorName} className="w-full h-full object-cover" />
+                    <img
+                      src={creatorAvatarUrl}
+                      alt={creatorName}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     "?"
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">{creatorName}</p>
-                  <p className="text-xs text-white/40">Responsável pelo projeto</p>
+                  <p className="text-sm font-semibold text-white">
+                    {creatorName}
+                  </p>
+                  <p className="text-xs text-white/40">
+                    Responsável pelo projeto
+                  </p>
                 </div>
               </div>
-              <button className="flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors">
-              </button>
+              <button className="flex items-center gap-2 text-sm text-white/40 hover:text-white transition-colors"></button>
             </div>
-
           </div>
         </div>
       </div>
